@@ -11,6 +11,8 @@ import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
 import System.Environment (lookupEnv)
+import Data.Maybe (fromMaybe)
+import Text.Read (readMaybe)
 
 data User = User
   { userId        :: Int
@@ -26,15 +28,10 @@ startApp :: IO ()
 startApp = do
   port <- getPortFromEnv
   run port app
-  
+
 getPortFromEnv :: IO Int
-getPortFromEnv = 
- parseWithFallback <$> stringPort 
- where 
-   stringPort = lookupEnv "PORT"
-   parseWithFallback maybestring = case maybestring of
-     Just x -> read x
-     Nothing -> 8080
+getPortFromEnv =
+ fromMaybe 8080 . (>>= readMaybe) <$> lookupEnv "PORT"
 
 app :: Application
 app = serve api server
