@@ -1,0 +1,6 @@
+.stack-work/
+successinhaskell.cabal
+*~
+.idea
+*.iml
+out
