@@ -30,8 +30,10 @@ startApp = do
   run port app
 
 getPortFromEnv :: IO Int
-getPortFromEnv =
- fromMaybe 8080 . (>>= readMaybe) <$> lookupEnv "PORT"
+getPortFromEnv = do
+ maybePort <- lookupEnv "PORT"
+ let port = maybePort >>= readMaybe
+ return $ fromMaybe 8080 port
 
 app :: Application
 app = serve api server
@@ -41,7 +43,6 @@ api = Proxy
 
 server :: Server API
 server = return users
-
 users :: [User]
 users = [ User 1 "Isaac" "Newton"
         , User 2 "Albert" "Einstein"
