@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Lib
     ( startApp
     ) where
@@ -13,6 +14,7 @@ import Servant
 import System.Environment (lookupEnv)
 import Data.Maybe (fromMaybe)
 import Text.Read (readMaybe)
+import Network.Wai.Middleware.Cors
 
 data User = User
   { userId        :: Int
@@ -36,7 +38,11 @@ getPortFromEnv = do
  return $ fromMaybe 8080 port
 
 app :: Application
-app = serve api server
+app = corsMiddleware $ serve api server
+  where corsMiddleware :: Middleware
+        corsMiddleware = cors (const $ Just simpleCorsResourcePolicy{
+          corsOrigins = Just(["https://froth-react-test.herokuapp.com"], True)
+        })
 
 api :: Proxy API
 api = Proxy
