@@ -11,10 +11,10 @@ import Data.Aeson.TH
 import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
-import System.Environment (lookupEnv)
-import Data.Maybe (fromMaybe)
-import Text.Read (readMaybe)
-import Network.Wai.Middleware.Cors
+
+import WaiHelpers
+import Stage
+import Env
 
 data User = User
   { userId        :: Int
@@ -28,21 +28,14 @@ type API = "users" :> Get '[JSON] [User]
 
 startApp :: IO ()
 startApp = do
-  port <- getPortFromEnv
-  run port app
+  port <- portFromEnv
+  env <- stageFromEnv
+  () <- putStrLn $ "Stage: " ++ show env
+  run port $ app env
 
-getPortFromEnv :: IO Int
-getPortFromEnv = do
- maybePort <- lookupEnv "PORT"
- let port = maybePort >>= readMaybe
- return $ fromMaybe 8080 port
+app :: Stage -> Application
+app stage = sslRedirect stage $ corsMiddleware $ serve api server
 
-app :: Application
-app = corsMiddleware $ serve api server
-  where corsMiddleware :: Middleware
-        corsMiddleware = cors (const $ Just simpleCorsResourcePolicy{
-          corsOrigins = Just(["https://froth-react-test.herokuapp.com"], True)
-        })
 
 api :: Proxy API
 api = Proxy
