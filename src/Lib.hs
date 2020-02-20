@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
-{-# LANGUAGE OverloadedStrings #-}
 module Lib
     ( startApp
     ) where
