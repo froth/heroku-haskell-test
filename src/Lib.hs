@@ -7,7 +7,6 @@ module Lib
 
 import Data.Aeson
 import Data.Aeson.TH
-import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
 
@@ -33,7 +32,7 @@ startApp = do
   run port $ app env
 
 app :: Stage -> Application
-app stage = sslRedirect stage $ corsMiddleware $ serve api server
+app stage = sslRedirect stage . corsMiddleware $ serve api server
 
 
 api :: Proxy API
