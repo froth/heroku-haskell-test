@@ -23,6 +23,7 @@ library
                      , aeson
                      , servant-server
                      , wai
+                     , wai-app-static
                      , wai-cors
                      , wai-extra
                      , warp

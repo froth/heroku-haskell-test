@@ -37,9 +37,8 @@ app stage = sslRedirect stage . corsMiddleware $ serve api server
 
 api :: Proxy API
 api = Proxy
-
 server :: Server API
-server = return users :<|> serveDirectoryWebApp "react"
+server = return users :<|> serveDirectoryWith (staticSettings "react")
 users :: [User]
 users = [ User 1 "Isaac" "Newton"
         , User 2 "Albert" "Einstein"
