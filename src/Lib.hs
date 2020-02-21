@@ -22,7 +22,7 @@ data User = User
 
 $(deriveJSON defaultOptions ''User)
 
-type API = "users" :> Get '[JSON] [User]
+type API = "users" :> Get '[JSON] [User] :<|> Raw
 
 startApp :: IO ()
 startApp = do
@@ -39,7 +39,7 @@ api :: Proxy API
 api = Proxy
 
 server :: Server API
-server = return users
+server = return users :<|> serveDirectoryWebApp "react"
 users :: [User]
 users = [ User 1 "Isaac" "Newton"
         , User 2 "Albert" "Einstein"
