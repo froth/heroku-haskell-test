@@ -17,3 +17,8 @@ stageFromEnv = do
   maybeStage <- lookupEnv "STAGE"
   let stage = maybeStage >>= readMaybe
   return $ fromMaybe Dev stage
+
+databaseUrlFromEnv :: IO String
+databaseUrlFromEnv = do
+  maybeUrl <- lookupEnv "DATABASE_URL"
+  return $ fromMaybe "postgresql://postgres@localhost" maybeUrl

@@ -27,6 +27,8 @@ library
                      , wai-cors
                      , wai-extra
                      , warp
+                     , postgresql-simple
+                     , bytestring
   default-language:    Haskell2010
 
 executable froth-haskell-test
