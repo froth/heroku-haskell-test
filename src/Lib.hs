@@ -1,11 +1,13 @@
 {-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveAnyClass #-}
 module Lib
     ( startApp
     ) where
 
+import GHC.Generics
 import Data.Aeson
 import Data.Aeson.TH
 import Network.Wai.Handler.Warp
@@ -22,16 +24,13 @@ data User = User
   { userId        :: Int
   , userFirstName :: String
   , userLastName  :: String
-  } deriving (Eq, Show)
+  } deriving (Generic, Eq, Show, FromJSON, ToJSON)
 
-$(deriveJSON defaultOptions ''User)
 
 newtype Foo = Foo
   {
     bar :: Int
-  } deriving (Eq, Show)
-
-$(deriveJSON defaultOptions ''Foo)
+  } deriving (Eq, Show, Generic, FromJSON, ToJSON)
 
 type API = "pgtest" :> Get '[JSON] Foo :<|> "users" :> Get '[JSON] [User] :<|> Raw
 
