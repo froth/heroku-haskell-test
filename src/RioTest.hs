@@ -34,11 +34,7 @@ instance HasRunner Runner where
 instance HasRunner Config where
   getRunner = configRunner
 
-newtype MyReaderT env m a = MyReaderT (ReaderT env m a) deriving (Monad, Applicative, Functor, MonadIO)
-
-instance (Monad m) => MonadReader env (MyReaderT env m) where
-  ask = MyReaderT ask
-  local = local
+newtype MyReaderT env m a = MyReaderT (ReaderT env m a) deriving (Monad, Applicative, Functor, MonadIO, (MonadReader env))
 
 takesFromEnvMaybe :: (HasConfig env, MonadIO m) => MyReaderT env m Stage
 takesFromEnvMaybe = do
