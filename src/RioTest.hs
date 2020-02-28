@@ -1,7 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module RioTest where
 
 import Data.Text
@@ -34,9 +30,8 @@ instance HasRunner Runner where
 instance HasRunner Config where
   getRunner = configRunner
 
-newtype MyReaderT env m a = MyReaderT (ReaderT env m a) deriving (Monad, Applicative, Functor, MonadIO, (MonadReader env))
 
-takesFromEnvMaybe :: (HasConfig env, MonadIO m) => MyReaderT env m Stage
+takesFromEnvMaybe :: (HasConfig env, MonadIO m) => ReaderT env m Stage
 takesFromEnvMaybe = do
   config <- ask
   let x = readOrNot . takeFromEnv $ getConfig config
@@ -50,7 +45,7 @@ takesFromEnvMaybe = do
 
 
 
-doesLoggingAndMore :: (HasRunner env, MonadIO m) =>  String -> MyReaderT env m ()
+doesLoggingAndMore :: (HasRunner env, MonadIO m) =>  String -> ReaderT env m ()
 doesLoggingAndMore text = do
   env <- ask
   let logfunction = runnerLog $ getRunner env
@@ -63,10 +58,9 @@ myConfig :: Config
 myConfig = Config {configRunner=myRunner, takeFromEnv=False}
 
 main :: IO ()
-main = case program of
-  MyReaderT reader -> runReaderT reader myConfig
+main = runReaderT program myConfig
   where
-    program :: MyReaderT Config IO ()
+    program :: ReaderT Config IO ()
     program = do
       doesLoggingAndMore "text"
       stage <- takesFromEnvMaybe
