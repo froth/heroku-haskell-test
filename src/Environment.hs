@@ -1,8 +1,9 @@
-module Env where
+{-# LANGUAGE NoImplicitPrelude #-}
+module Environment where
+
+import Import
 
 import System.Environment (lookupEnv)
-import Data.Maybe (fromMaybe)
-import Text.Read (readMaybe)
 
 import Stage
 

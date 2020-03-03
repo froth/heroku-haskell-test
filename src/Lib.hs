@@ -1,3 +1,4 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE TypeOperators   #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -6,10 +7,9 @@
 module Lib
     ( startApp
     ) where
-
-import GHC.Generics
+    
+import Import
 import Data.Aeson
-import Data.Aeson.TH
 import Network.Wai.Handler.Warp
 import Database.PostgreSQL.Simple
 import Servant
@@ -17,8 +17,7 @@ import qualified Data.ByteString.Char8 as B
 
 import WaiHelpers
 import Stage
-import Env
-import Control.Monad.IO.Class (liftIO)
+import Environment
 
 data User = User
   { userId        :: Int
@@ -34,13 +33,13 @@ newtype Foo = Foo
 
 type API = "pgtest" :> Get '[JSON] Foo :<|> "users" :> Get '[JSON] [User] :<|> Raw
 
-startApp :: IO ()
+startApp :: RIO App ()
 startApp = do
-  port <- portFromEnv
-  env <- stageFromEnv
-  databaseUrl <- databaseUrlFromEnv
-  putStrLn $ "Stage: " ++ show env
-  run port $ app (B.pack databaseUrl) env
+  port <- liftIO portFromEnv
+  stage <- liftIO stageFromEnv
+  databaseUrl <- liftIO databaseUrlFromEnv
+  logInfo $ "Stage: " <> displayShow stage
+  liftIO $ run port $ app (B.pack databaseUrl) stage
 
 app :: B.ByteString -> Stage -> Application
 app url stage = sslRedirect stage . corsMiddleware $ serve api $ server url
