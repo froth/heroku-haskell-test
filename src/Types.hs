@@ -1,16 +1,24 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE FlexibleInstances #-}
 module Types where
 
 import RIO
-import RIO.Process
 
-data App = App
+import Data.Pool (Pool)
+import Database.PostgreSQL.Simple (Connection)
+newtype DatabaseUrl = DatabaseUrl ByteString
+
+data Env = Env
   { appLogFunc :: !LogFunc
-  , appProcessContext :: !ProcessContext
+  , connectionPool :: !(Pool Connection)
   -- Add other app-specific configuration information here
   }
 
-instance HasLogFunc App where
+instance HasLogFunc Env where
   logFuncL = lens appLogFunc (\x y -> x { appLogFunc = y })
-instance HasProcessContext App where
-  processContextL = lens appProcessContext (\x y -> x { appProcessContext = y })
+
+class WithConnectionPool env where
+  connectionPoolL :: Lens' env (Pool Connection)
+
+instance WithConnectionPool Env where
+  connectionPoolL = lens connectionPool (\x y -> x {connectionPool = y})

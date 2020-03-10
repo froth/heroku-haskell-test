@@ -1,11 +1,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Environment where
 
 import Import
-
+import qualified RIO.Map as Map
 import System.Environment (lookupEnv)
 
 import Stage
+import RIO.Process
 
 portFromEnv :: IO Int
 portFromEnv = do
@@ -23,3 +25,10 @@ databaseUrlFromEnv :: IO String
 databaseUrlFromEnv = do
   maybeUrl <- lookupEnv "DATABASE_URL"
   return $ fromMaybe "postgresql://postgres@localhost" maybeUrl
+  
+databaseUrlFromProcessContext :: ProcessContext -> DatabaseUrl
+databaseUrlFromProcessContext pc =
+   DatabaseUrl . encodeUtf8 . fromMaybe "postgresql://postgres@localhost" $ maybeUrl
+   where 
+     maybeUrl = Map.lookup "DATABASE_URL" envVars
+     envVars = view envVarsL pc

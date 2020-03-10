@@ -18,9 +18,9 @@ library
   exposed-modules:     Lib
                      , Import
                      , Types
+                     , Environment
   other-modules:       WaiHelpers
                      , Stage
-                     , Environment
   ghc-options:       -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
   build-depends:       base >= 4.11 && < 10
                      , rio >=0.1.12.0
@@ -32,7 +32,7 @@ library
                      , wai-extra
                      , warp
                      , postgresql-simple
-                     , bytestring
+                     , resource-pool
   default-language:    Haskell2010
 
 executable froth-haskell-test
@@ -41,6 +41,8 @@ executable froth-haskell-test
   ghc-options:         -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base >= 4.11 && < 10
                      , rio >=0.1.12.0
+                     , resource-pool
+                     , postgresql-simple
                      , froth-haskell-test
   default-language:    Haskell2010
 
