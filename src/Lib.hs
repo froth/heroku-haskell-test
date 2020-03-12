@@ -33,27 +33,32 @@ newtype Foo = Foo
     bar :: Int
   } deriving (Eq, Show, Generic, FromJSON, ToJSON)
 
-type API = "pgtest" :> Get '[JSON] Foo -- :<|> "users" :> Get '[JSON] [User] :<|> Raw
+type API = "pgtest" :> Get '[JSON] Foo :<|> "users" :> Get '[JSON] [User] :<|> Raw
 
 startApp :: RIO Env ()
 startApp = do
-  port <- liftIO portFromEnv
-  stage <- liftIO stageFromEnv
-  logInfo $ "Stage: " <> displayShow stage
+  env <- ask
+  let localPort = view portL env
+  logInfo $ "Stage: " <> (displayShow $ stage env)
+  logInfo $ "port" <> displayShow localPort
   application <- app
-  liftIO $ run port application
+  liftIO $ run localPort application
 
-app :: WithConnectionPool env => RIO env Application
---TODO stage sslRedirect Prod . corsMiddleware $ e
-app =
-   fmap (serve api) server
+app :: WithStage env => WithConnectionPool env => RIO env Application
+app = do
+  env <- ask
+  let localstage = view stageL env
+  localserver <- server
+  return $ sslRedirect localstage . corsMiddleware $ serve api localserver
 
 
 api :: Proxy API
 api = Proxy
 server :: WithConnectionPool env => (RIO env (Server API))
-server =
- fmap return pgtest -- :<|> return users :<|> return serveDirectoryWith (staticSettings "react")
+server = do
+  pg <- pgtest
+  urs <- users
+  return  $ (return pg :<|> return urs :<|> serveDirectoryWith (staticSettings "react"))
 
 users :: RIO env [User]
 users = return [ User 1 "Isaac" "Newton"

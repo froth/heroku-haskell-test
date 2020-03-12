@@ -12,12 +12,16 @@ main :: IO ()
 main = do
   logOptions <- logOptionsHandle stderr True
   pc <- mkDefaultProcessContext
-  let dataBaseUrlFromEnv = databaseUrlFromProcessContext pc
+  let dataBaseUrlFromEnv = databaseUrlFromPC pc
+  let stageFromEnv = stageFromPC pc
+  let portFromEnv = portFromPC pc
   myConnectionPool <- initConnectionPool dataBaseUrlFromEnv
   withLogFunc logOptions $ \lf ->
     let app = Env
           { appLogFunc = lf
           , connectionPool = myConnectionPool
+          , stage = stageFromEnv
+          , port = portFromEnv
           }
      in runRIO app startApp
 
