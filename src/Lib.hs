@@ -43,7 +43,7 @@ startApp = do
 buildApp :: (WithStage env, WithConnectionPool env) => RIO env Application
 buildApp = do
   localstage <- view stageL
-  env <- ask
+  env <- ask 
   return . sslRedirect localstage . corsMiddleware . serve api . hoist $ env
 
 api :: Proxy API
@@ -70,4 +70,4 @@ pgtest = do
 hoist :: forall env. WithConnectionPool env => env -> Server API
 hoist env = hoistServer api nat server
   where nat :: RIO env a -> Servant.Handler a
-        nat act = Servant.Handler $ ExceptT $ try $ runRIO env act
+        nat act = Servant.Handler $ ExceptT $ try $ runRIO env act -- TODO move this runRIO to Main?
