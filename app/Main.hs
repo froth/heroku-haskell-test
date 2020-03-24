@@ -18,10 +18,10 @@ main = do
   myConnectionPool <- initConnectionPool dataBaseUrlFromEnv
   withLogFunc logOptions $ \lf ->
     let app = Env
-          { appLogFunc = lf
-          , connectionPool = myConnectionPool
-          , stage = stageFromEnv
-          , port = portFromEnv
+          { _appLogFunc = lf
+          , _connectionPool = myConnectionPool
+          , _stage = stageFromEnv
+          , _port = portFromEnv
           }
      in runRIO app startApp
 

@@ -34,6 +34,7 @@ library
                      , warp
                      , postgresql-simple
                      , resource-pool
+                     , microlens-th
   default-language:    Haskell2010
 
 executable froth-haskell-test

@@ -4,7 +4,6 @@ module Environment where
 
 import Import
 import qualified RIO.Map as Map
-import System.Environment (lookupEnv)
 
 import qualified RIO.Text as T
 import Stage

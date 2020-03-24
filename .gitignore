@@ -4,3 +4,4 @@ successinhaskell.cabal
 .idea
 *.iml
 out
+*.code-workspace
